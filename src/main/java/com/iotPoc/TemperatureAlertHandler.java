@@ -24,10 +24,13 @@ public class TemperatureAlertHandler implements RequestHandler<Map<String, Objec
     @Override
     public String handleRequest(Map<String, Object> event, Context context) {
         try {
-            System.out.println("Evento Recibido" + event);
-            context.getLogger().log("Evento Recibido" + event);
+
+            System.out.println("Evento Recibido :" + event);
+            context.getLogger().log("Evento Recibido: " + event);
             JsonNode payload = objectMapper.valueToTree(event);
             context.getLogger().log("Payload Recibido" + payload);
+            context.getLogger().log("Temperatura" + payload.get("Temperatura"));
+
             double temperatura = payload.get("Temperatura").asDouble();
             String dispositivoId = payload.get("DispositivoId").asText();
 
