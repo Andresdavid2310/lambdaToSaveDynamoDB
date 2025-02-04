@@ -36,3 +36,9 @@ jobs:
 
       - name: Upload Lambda package to S3
         run: aws s3 cp lambda.zip s3://my-lambda-report-bucket-poc/lambda.zip
+
+      - name: Update Lambda Function Code
+        run: aws lambda update-function-code 
+              --function-name TemperatureAlertHandler 
+              --s3-bucket my-lambda-report-bucket-poc 
+              --s3-key lambda.zip
