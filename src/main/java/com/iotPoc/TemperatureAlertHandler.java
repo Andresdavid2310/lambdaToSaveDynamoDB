@@ -40,7 +40,7 @@ public class TemperatureAlertHandler implements RequestHandler<Map<String, Objec
                 return "Temperatura normal, sin incidencia.";
             }
         } catch (Exception e) {
-            context.getLogger().log("Error procesando el evento: " + e.getMessage());
+            context.getLogger().log("Error procesando el evento: " + e.getMessage() + event);
             return "Error";
         }
     }
