@@ -24,15 +24,27 @@ public class TemperatureAlertHandler implements RequestHandler<Map<String, Objec
     @Override
     public String handleRequest(Map<String, Object> event, Context context) {
         try {
-
-            System.out.println("Evento Recibido :" + event);
             context.getLogger().log("Evento Recibido: " + event);
             JsonNode payload = objectMapper.valueToTree(event);
-            context.getLogger().log("Payload Recibido" + payload);
-            context.getLogger().log("Temperatura" + payload.get("Temperatura"));
+            context.getLogger().log("Payload Recibido: " + payload);
 
-            double temperatura = payload.get("Temperatura").asDouble();
-            String dispositivoId = payload.get("DispositivoId").asText();
+            // Verifica si el campo "Temperatura" existe y no es null
+            JsonNode temperaturaNode = payload.get("Temperatura");
+            if (temperaturaNode == null || temperaturaNode.isNull()) {
+                context.getLogger().log("Error: El campo 'Temperatura' no existe o es null.");
+                return "Error: El campo 'Temperatura' no existe o es null.";
+            }
+
+            // Verifica si el campo "DispositivoId" existe y no es null
+            JsonNode dispositivoIdNode = payload.get("DispositivoId");
+            if (dispositivoIdNode == null || dispositivoIdNode.isNull()) {
+                context.getLogger().log("Error: El campo 'DispositivoId' no existe o es null.");
+                return "Error: El campo 'DispositivoId' no existe o es null.";
+            }
+
+            // Obtén los valores de los campos
+            double temperatura = temperaturaNode.asDouble();
+            String dispositivoId = dispositivoIdNode.asText();
 
             context.getLogger().log("Recibido del dispositivo " + dispositivoId + " temperatura: " + temperatura);
 
@@ -43,9 +55,8 @@ public class TemperatureAlertHandler implements RequestHandler<Map<String, Objec
                 return "Temperatura normal, sin incidencia.";
             }
         } catch (Exception e) {
-            System.out.println("Evento Recibido" + event);
             context.getLogger().log("Error procesando el evento: " + e.getMessage());
-            return "Error";
+            return "Error: " + e.getMessage();
         }
     }
 
