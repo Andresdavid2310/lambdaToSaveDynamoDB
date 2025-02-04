@@ -53,15 +53,24 @@ public class TemperatureAlertHandler implements RequestHandler<Map<String, Objec
         item.put("temperatura", AttributeValue.builder().n(String.valueOf(temperatura)).build());
         item.put("timestamp", AttributeValue.builder().s(Instant.now().toString()).build());
         item.put("estado", AttributeValue.builder().s("Pendiente").build());
-        DynamoDbClient dynamoDbClient = DynamoDbClient.builder()
-                .region(Region.US_EAST_1)
-                .build();
-        PutItemRequest request = PutItemRequest.builder()
-                .tableName(tableName)
-                .item(item)
-                .build();
 
-        dynamoDbClient.putItem(request);
-        context.getLogger().log("Incidencia registrada en DynamoDB.");
+        try {
+            context.getLogger().log("Table name :.\n"+ tableName);
+
+            PutItemRequest request = PutItemRequest.builder()
+                    .tableName(tableName)
+                    .item(item)
+                    .build();
+            // Crea el cliente DynamoDB con la configuración correcta (por ejemplo, la región)
+            DynamoDbClient dynamoDbClient = DynamoDbClient.builder()
+                    .region(Region.US_EAST_1)  // Asegúrate de que la región sea correcta
+                    .build();
+            // Llamada para guardar en DynamoDB
+            dynamoDbClient.putItem(request);
+            context.getLogger().log("Incidencia registrada en DynamoDB.");
+        } catch (Exception e) {
+            context.getLogger().log("Error al guardar en DynamoDB: " + e.getMessage());
+            throw new RuntimeException("Error al guardar en DynamoDB", e);
+        }
     }
 }
