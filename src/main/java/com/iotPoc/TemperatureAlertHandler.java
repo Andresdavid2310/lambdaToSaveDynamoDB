@@ -4,6 +4,7 @@ import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
 import software.amazon.awssdk.services.dynamodb.model.PutItemRequest;
@@ -52,7 +53,9 @@ public class TemperatureAlertHandler implements RequestHandler<Map<String, Objec
         item.put("temperatura", AttributeValue.builder().n(String.valueOf(temperatura)).build());
         item.put("timestamp", AttributeValue.builder().s(Instant.now().toString()).build());
         item.put("estado", AttributeValue.builder().s("Pendiente").build());
-
+        DynamoDbClient dynamoDbClient = DynamoDbClient.builder()
+                .region(Region.US_EAST_1)
+                .build();
         PutItemRequest request = PutItemRequest.builder()
                 .tableName(tableName)
                 .item(item)
