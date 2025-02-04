@@ -49,7 +49,7 @@ public class TemperatureAlertHandler implements RequestHandler<Map<String, Objec
             context.getLogger().log("Recibido del dispositivo " + dispositivoId + " temperatura: " + temperatura);
 
             if (temperatura > 49) {
-                crearIncidencia(dispositivoId, temperatura, context);
+                //crearIncidencia(dispositivoId, temperatura, context);
                 return "Incidencia creada para " + dispositivoId;
             } else {
                 return "Temperatura normal, sin incidencia.";
