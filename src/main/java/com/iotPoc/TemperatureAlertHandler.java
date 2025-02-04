@@ -2,8 +2,6 @@ package com.iotPoc;
 
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
@@ -51,16 +49,17 @@ public class TemperatureAlertHandler implements RequestHandler<Map<String, Objec
         item.put("incidenciaId", AttributeValue.builder().s(UUID.randomUUID().toString()).build());
         item.put("dispositivoId", AttributeValue.builder().s(dispositivoId).build());
         item.put("temperatura", AttributeValue.builder().n(String.valueOf(temperatura)).build());
-        item.put("timestamp", AttributeValue.builder().s(Instant.now().toString()).build());
+        item.put("fecha", AttributeValue.builder().s(Instant.now().toString()).build());
         item.put("estado", AttributeValue.builder().s("Pendiente").build());
 
         try {
-            context.getLogger().log("Table name :.\n"+ tableName);
+            context.getLogger().log("Table name :\n"+ tableName);
 
             PutItemRequest request = PutItemRequest.builder()
                     .tableName(tableName)
                     .item(item)
                     .build();
+
             // Crea el cliente DynamoDB con la configuración correcta (por ejemplo, la región)
             DynamoDbClient dynamoDbClient = DynamoDbClient.builder()
                     .region(Region.US_EAST_1)  // Asegúrate de que la región sea correcta
