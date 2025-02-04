@@ -27,8 +27,8 @@ public class TemperatureAlertHandler implements RequestHandler<Map<String, Objec
             context.getLogger().log("Evento Recibido" + event);
             JsonNode payload = objectMapper.valueToTree(event);
             context.getLogger().log("Payload Recibido" + payload);
-            double temperatura = payload.get("Temperatura").asDouble();
-            String dispositivoId = payload.get("DispositivoId").asText();
+            double temperatura = payload.get("temperatura").asDouble();
+            String dispositivoId = payload.get("dispositivoId").asText();
 
             context.getLogger().log("Recibido del dispositivo " + dispositivoId + " temperatura: " + temperatura);
 
