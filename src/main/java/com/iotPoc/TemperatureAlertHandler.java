@@ -15,7 +15,6 @@ import java.util.UUID;
 
 public class TemperatureAlertHandler implements RequestHandler<Map<String, Object>, String> {
 
-    private final ObjectMapper objectMapper = new ObjectMapper();
     private final DynamoDbClient dynamoDbClient = DynamoDbClient.create();
 
     // El nombre de la tabla se obtiene de las variables de entorno
@@ -23,40 +22,25 @@ public class TemperatureAlertHandler implements RequestHandler<Map<String, Objec
 
     @Override
     public String handleRequest(Map<String, Object> event, Context context) {
+        context.getLogger().log("Inicio de la función Lambda.\n");
+
         try {
-            context.getLogger().log("Evento Recibido: " + event);
-            JsonNode payload = objectMapper.valueToTree(event);
-            context.getLogger().log("Payload Recibido: " + payload);
-
-            // Verifica si el campo "Temperatura" existe y no es null
-            JsonNode temperaturaNode = payload.get("Temperatura");
-            if (temperaturaNode == null || temperaturaNode.isNull()) {
-                context.getLogger().log("Error: El campo 'Temperatura' no existe o es null.");
-                return "Error: El campo 'Temperatura' no existe o es null.";
-            }
-
-            // Verifica si el campo "DispositivoId" existe y no es null
-            JsonNode dispositivoIdNode = payload.get("DispositivoId");
-            if (dispositivoIdNode == null || dispositivoIdNode.isNull()) {
-                context.getLogger().log("Error: El campo 'DispositivoId' no existe o es null.");
-                return "Error: El campo 'DispositivoId' no existe o es null.";
-            }
-
-            // Obtén los valores de los campos
-            double temperatura = temperaturaNode.asDouble();
-            String dispositivoId = dispositivoIdNode.asText();
-
-            context.getLogger().log("Recibido del dispositivo " + dispositivoId + " temperatura: " + temperatura);
+            double temperatura = Double.parseDouble(event.get("Temperatura").toString());
+            String dispositivoId = event.get("DispositivoId").toString();
+            context.getLogger().log("Temperatura recibida: " + temperatura + "\n");
 
             if (temperatura > 49) {
-                //crearIncidencia(dispositivoId, temperatura, context);
-                return "Incidencia creada para " + dispositivoId;
+                context.getLogger().log("Incidencia creada para el dispositivo: " + dispositivoId + "\n");
+                return "{\"statusCode\": 200, \"message\": \"Incidencia creada para " + dispositivoId + "\"}";
             } else {
-                return "Temperatura normal, sin incidencia.";
+                context.getLogger().log("Temperatura normal. No se creó incidencia.\n");
+                return "{\"statusCode\": 200, \"message\": \"Temperatura normal, sin incidencia.\"}";
             }
         } catch (Exception e) {
-            context.getLogger().log("Error procesando el evento: " + e.getMessage());
-            return "Error: " + e.getMessage();
+            context.getLogger().log("Error procesando el evento: " + e.getMessage() + "\n");
+            return "{\"statusCode\": 500, \"message\": \"Error al procesar el evento: " + e.getMessage() + "\"}";
+        } finally {
+            context.getLogger().log("Fin de la función Lambda.\n");
         }
     }
 
